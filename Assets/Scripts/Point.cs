@@ -24,7 +24,7 @@ public class Point : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        //SetABC();
+        SetABC();
         float x = gameObject.transform.position.x;
         float y = gameObject.transform.position.y;
         float z = gameObject.transform.position.z;
