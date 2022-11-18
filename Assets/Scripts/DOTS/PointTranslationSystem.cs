@@ -23,7 +23,7 @@ public partial struct PointTranslationSystem : ISystem
         var c = man.c;
         var t = man.t;
 
-        Debug.Log(a);
+        //Debug.Log(a);
 
         foreach (var transform in SystemAPI.Query<TransformAspect>().WithAll<PointComponent>())
         {
@@ -31,7 +31,7 @@ public partial struct PointTranslationSystem : ISystem
             var y = transform.Position.y;
             var z = transform.Position.z;
 
-            Debug.Log(x);
+            //Debug.Log(x);
 
             var nextpos = new float3
             {
@@ -41,7 +41,7 @@ public partial struct PointTranslationSystem : ISystem
             };
 
             transform.Position = nextpos;
-            Debug.Log(nextpos);
+            //Debug.Log(nextpos);
         }
     }
 }
