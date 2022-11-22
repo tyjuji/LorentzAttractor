@@ -4,40 +4,122 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEditorInternal;
-using UnityEngine;
+//using UnityEngine;
+using Unity.Collections;
+//using System;
+using static UnityEngine.Random;
+using System;
 
+[CreateAfter(typeof(InitializationSystemGroup))]
 public partial class DOTSManager : SystemBase
 {
+    //EntityQuery inscene;
+
+    uint updatecounter;
+
+    bool spawned = false;
+
     protected override void OnCreate()
     {
+        RequireForUpdate<ManagerData>();
 
+
+        //var queryBuilder = new EntityQueryBuilder(Allocator.Temp);
+        //queryBuilder.WithAll<PointComponent>();
+        //inscene = GetEntityQuery(queryBuilder);
+
+        //var prefab = SystemAPI.GetSingleton<ManagerData>().pointPrefab;
+
+        //// Instantiating an entity creates copy entities with the same component types and values.
+        //var instances = EntityManager.Instantiate(prefab, 500, Allocator.Temp);
+
+        //// Unlike new Random(), CreateFromIndex() hashes the random seed
+        //// so that similar seeds don't produce similar results.
+        //var random = Unity.Mathematics.Random.CreateFromIndex(updatecounter++);
+
+        //foreach (var entity in instances)
+        //{
+        //    var position = (random.NextFloat3() - new float3(0.5f, 0, 0.5f)) * 20;
+
+        //    // Get a TransformAspect instance wrapping the entity.
+        //    var transform = SystemAPI.GetAspectRW<TransformAspect>(entity);
+        //    transform.LocalPosition = position;
+        //}
     }
 
     protected override void OnStartRunning()
     {
         var manData = GetSingleton<ManagerData>();
-        var ecb =
-            SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem
-            .Singleton>().CreateCommandBuffer(World.Unmanaged);
+        //var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        Unity.Mathematics.Random random = new Unity.Mathematics.Random();
+        //Unity.Mathematics.Random random = new Unity.Mathematics.Random((uint)DateTime.Now.Ticks);
 
-        var min = new float3(0, 0, 0);
-        var max = new float3(10, 10, 10);
+        //var min = new float3(0, 0, 0);
+        //var max = new float3(10, 10, 10);
 
-        Debug.Log(manData.spawnCount);
+        //Debug.Log(manData.spawnCount);
 
-        for (int i = 0; i < manData.spawnCount; i++)
-        {
-            Entity ent = ecb.Instantiate(manData.pointPrefab);
-            var trans = GetComponent<LocalToWorldTransform>(ent);
-            trans.Value.Position = random.NextFloat3(min, max);
-        }
+        //var asd = EntityManager.Instantiate(manData.pointPrefab, 200, Allocator.Temp);
 
-        ecb.Playback(EntityManager.WorldUnmanaged.EntityManager);
+        //foreach (var item in asd)
+        //{
+        //    var trans = new UniformScaleTransform { Position = random.NextFloat3(min, max) };
+        //    var l2wtrans = new LocalToWorldTransform { Value = trans };
+        //    SetComponent<LocalToWorldTransform>(item, l2wtrans);
+        //}
+
+        //for (int i = 0; i < manData.spawnCount; i++)
+        //{
+        //    Entity ent = ecb.Instantiate(manData.pointPrefab);
+        //    var trans = new UniformScaleTransform { Position = random.NextFloat3(min, max) };
+        //    var l2wtrans = new LocalToWorldTransform { Value = trans };
+        //    ecb.SetComponent<LocalToWorldTransform>(ent, l2wtrans);
+        //}
+
+        //ecb.Playback(EntityManager.World.EntityManager);
     }
 
     protected override void OnUpdate()
     {
+        var manData = GetSingleton<ManagerData>();
+        var ecb = new EntityCommandBuffer(Allocator.Temp);
+
+        //Unity.Mathematics.Random random = new Unity.Mathematics.Random((uint)DateTime.Now.Ticks);
+
+        var min = new float3(0, 0, 0);
+        var max = new float3(10, 10, 10);
+
+        if (!spawned) 
+        {
+            spawned = true;
+            var prefab = SystemAPI.GetSingleton<ManagerData>().pointPrefab;
+
+            // Instantiating an entity creates copy entities with the same component types and values.
+            var instances = EntityManager.Instantiate(prefab, 100000, Allocator.Temp);
+
+            // Unlike new Random(), CreateFromIndex() hashes the random seed
+            // so that similar seeds don't produce similar results.
+            var random = Unity.Mathematics.Random.CreateFromIndex(updatecounter++);
+
+            foreach (var entity in instances)
+            {
+                var position = (random.NextFloat3() - new float3(0.5f, 0, 0.5f)) * 20;
+
+                // Get a TransformAspect instance wrapping the entity.
+                var transform = SystemAPI.GetAspectRW<TransformAspect>(entity);
+                transform.LocalPosition = position;
+            }
+
+            //for (int i = 0; i < manData.spawnCount; i++)
+            //{
+            //    //Entity ent = ecb.Instantiate(manData.pointPrefab);
+            //    Entity ent = ecb.Instantiate(SystemAPI.GetSingleton<ManagerData>().pointPrefab);
+            //    //var trans = new UniformScaleTransform { Position = random.NextFloat3(min, max) };
+            //    //var l2wtrans = new LocalToWorldTransform { Value = trans };
+            //    //ecb.SetComponent<LocalToWorldTransform>(ent, l2wtrans);
+            //}
+
+            //ecb.Playback(EntityManager.WorldUnmanaged.EntityManager);
+        }
     }
 }
