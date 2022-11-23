@@ -6,20 +6,25 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Burst;
 
+[BurstCompile]
+[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
 public partial struct PointTranslationSystem : ISystem
 {
+    [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<LorentzData>();
     }
 
+    [BurstCompile]
     public void OnDestroy(ref SystemState state)
     {
     }
 
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        //var man = SystemAPI.GetSingleton<LorentzData>();
+        var man = SystemAPI.GetSingleton<LorentzData>();
         //var a = man.a;
         //var b = man.b;
         //var c = man.c;
@@ -54,11 +59,12 @@ public partial struct PointTranslationSystem : ISystem
         // Create the job.
         var job = new PointJobEntity
         {
-            Ecb = ecb.AsParallelWriter()
+            Ecb = ecb.AsParallelWriter(),
+            Lorentz = man
         };
 
         // Schedule the job. Source generation creates and passes the query implicitly.
-        state.Dependency = job.Schedule(state.Dependency);
+        state.Dependency = job.ScheduleParallel(state.Dependency);
     }
 }
 
@@ -91,9 +97,10 @@ public partial struct PointJobEntity : IJobEntity
     //     the EntityCommandBuffer.ParallelWriter, so we include an
     //     int parameter with the [ChunkIndexInQuery] attribute.
     [BurstCompile]
-    public void Execute(ref TransformAspect trans)
+    public void Execute(ref TransformAspect trans)//ref LocalToWorldTransform trans)//ref TransformAspect trans)
     {
         var a = Lorentz.a;
+        //Debug.Log(a);
         var b = Lorentz.b;
         var c = Lorentz.c;
         var t = Lorentz.t;
@@ -109,6 +116,8 @@ public partial struct PointJobEntity : IJobEntity
             y = y + t * (x * (b - z) - y),
             z = z + t * (x * y - c * z)
         };
+
+        //Debug.Log(nextpos.x);
 
         trans.Position = nextpos;
     }

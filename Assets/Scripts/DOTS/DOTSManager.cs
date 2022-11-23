@@ -9,6 +9,8 @@ using Unity.Collections;
 //using System;
 using static UnityEngine.Random;
 using System;
+using UnityEngine;
+using Unity.Rendering;
 
 [CreateAfter(typeof(InitializationSystemGroup))]
 public partial class DOTSManager : SystemBase
@@ -27,6 +29,7 @@ public partial class DOTSManager : SystemBase
         //var queryBuilder = new EntityQueryBuilder(Allocator.Temp);
         //queryBuilder.WithAll<PointComponent>();
         //inscene = GetEntityQuery(queryBuilder);
+
 
         //var prefab = SystemAPI.GetSingleton<ManagerData>().pointPrefab;
 
@@ -95,7 +98,7 @@ public partial class DOTSManager : SystemBase
             var prefab = SystemAPI.GetSingleton<ManagerData>().pointPrefab;
 
             // Instantiating an entity creates copy entities with the same component types and values.
-            var instances = EntityManager.Instantiate(prefab, 100000, Allocator.Temp);
+            var instances = EntityManager.Instantiate(prefab, manData.spawnCount, Allocator.Temp);
 
             // Unlike new Random(), CreateFromIndex() hashes the random seed
             // so that similar seeds don't produce similar results.
@@ -108,6 +111,10 @@ public partial class DOTSManager : SystemBase
                 // Get a TransformAspect instance wrapping the entity.
                 var transform = SystemAPI.GetAspectRW<TransformAspect>(entity);
                 transform.LocalPosition = position;
+
+
+                // Set random color
+                EntityManager.AddComponentData(entity, new URPMaterialPropertyBaseColor { Value = random.NextFloat4() });
             }
 
             //for (int i = 0; i < manData.spawnCount; i++)
