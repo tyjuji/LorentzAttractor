@@ -155,7 +155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pointPrefab: {fileID: 8305897269637602190, guid: 386ad2345f7041a48a98f5a98b26dae6,
     type: 3}
-  spawnCount: 200
+  spawnCount: 5000
 --- !u!114 &1911839479
 MonoBehaviour:
   m_ObjectHideFlags: 0
